@@ -130,3 +130,7 @@ dmypy.json
 
 # .idea
 .idea
+
+linter.txt
+.vscode
+*setup.cfg
