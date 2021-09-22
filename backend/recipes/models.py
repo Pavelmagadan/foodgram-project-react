@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 
 User = get_user_model()
@@ -84,7 +85,12 @@ class IngredientRecipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
-    amount = models.FloatField(verbose_name='Количество')
+    amount = models.FloatField(
+        verbose_name='Количество',
+        validators=[MinValueValidator(
+            0.001, 'Количество должно быть положительным числом'
+        )]
+    )
 
     class Meta:
         verbose_name_plural = 'Ингредиенты'
