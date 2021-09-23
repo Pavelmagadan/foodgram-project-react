@@ -134,3 +134,6 @@ dmypy.json
 linter.txt
 .vscode
 *setup.cfg
+
+/backend/backmedia/
+/backend/backstatic/

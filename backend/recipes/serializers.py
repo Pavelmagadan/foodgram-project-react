@@ -55,7 +55,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 
 class RecipesSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(source='lovers')
-    is_in_shoping_cart = serializers.SerializerMethodField(source='buyer')
+    is_in_shopping_cart = serializers.SerializerMethodField(source='buyer')
     tags = TagsSerializer(many=True)
     author = CustomUserSerializer()
     ingredients = IngredientRecipeSerializer(
@@ -69,7 +69,7 @@ class RecipesSerializer(serializers.ModelSerializer):
             'author',
             'ingredients',
             'is_favorited',
-            'is_in_shoping_cart',
+            'is_in_shopping_cart',
             'name',
             'image',
             'text',
@@ -82,7 +82,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         lover = obj.lovers.filter(lover__username=user)
         return lover.exists()
 
-    def get_is_in_shoping_cart(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user.username
         buyer = obj.buyer.filter(buyer__username=user)
         return buyer.exists()

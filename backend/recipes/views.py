@@ -45,13 +45,13 @@ class RecipesListRetreveDestroyView(
         exclude_params = {}
         filter_params = {}
         username = self.request.user.username
-        if query_params.get('is_favorite') == '0':
+        if query_params.get('is_favorited') == 'false':
             exclude_params['lovers__lover__username'] = username
-        elif query_params.get('is_favorite') == '1':
+        elif query_params.get('is_favorited') == 'true':
             filter_params['lovers__lover__username'] = username
-        if query_params.get('is_in_shoping_cart') == '0':
+        if query_params.get('is_in_shopping_cart') == 'false':
             exclude_params['buyer__buyer__username'] = username
-        elif query_params.get('is_in_shoping_cart') == '1':
+        elif query_params.get('is_in_shopping_cart') == 'true':
             filter_params['buyer__buyer__username'] = username
         return Recipes.objects.filter(**filter_params).exclude(
             **exclude_params

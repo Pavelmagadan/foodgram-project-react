@@ -1,14 +1,17 @@
+import django_filters
+
 from django_filters import rest_framework as filters
 
-from recipes.models import Recipes
-
-
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
-    pass
+from recipes.models import Recipes, Tags
 
 
 class RecipesFilter(filters.FilterSet):
-    tags = CharFilterInFilter(field_name='tags__name', lookup_expr='in')
+
+    tags = django_filters.filters.ModelMultipleChoiceFilter(
+        field_name='tags__slug',
+        to_field_name='slug',
+        queryset=Tags.objects.all()
+    )
 
     class Meta:
         model = Recipes
