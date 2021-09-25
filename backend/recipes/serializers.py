@@ -1,15 +1,12 @@
 import webcolors
-
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-
 from users.serializers import CustomUserSerializer
 
 from .models import IngredientRecipe, Ingredients, Recipes, Tags
 
 User = get_user_model()
-
 
 class Hex2NameColor(serializers.Field):
     def to_representation(self, value):

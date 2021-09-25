@@ -17,26 +17,28 @@ class TagInline(admin.TabularInline):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'subscriber', 'subscribed',)
+    list_display = ('id', 'subscriber', 'subscribed',)
     ordering = ('subscriber',)
-
+    list_display_links = ('id', 'subscriber', 'subscribed',)
 
 @admin.register(ShopingCart)
 class ShopingCartAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'buyer', 'recipe',)
+    list_display = ('id', 'buyer', 'recipe',)
     ordering = ('buyer',)
-
+    list_display_links = ('id', 'buyer', 'recipe',)
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'lover', 'recipe',)
+    list_display = ('id', 'lover', 'recipe',)
     ordering = ('lover',)
+    list_display_links = ('id', 'lover', 'recipe',)
 
 
 @admin.register(Tags)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'color', 'slug',)
+    list_display = ('id', 'name', 'color', 'slug',)
     ordering = ('name',)
+    list_display_links = ('id', 'name', 'color', 'slug',)
 
 
 @admin.register(Recipes)

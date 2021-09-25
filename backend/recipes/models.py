@@ -4,7 +4,6 @@ from django.db import models
 
 User = get_user_model()
 
-
 class Ingredients(models.Model):
     name = models.CharField(
         max_length=200,
@@ -61,7 +60,11 @@ class Recipes(models.Model):
         verbose_name='Изображение'
     )
     text = models.TextField(verbose_name='Описание')
-    cooking_time = models.IntegerField(verbose_name='Время приготовления, мин')
+    cooking_time = models.IntegerField(
+        verbose_name='Время приготовления, мин',
+        validators=[MinValueValidator(
+            0.001, 'Время приготовления должно быть положительным числом'
+        )])
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата публикации'
     )
@@ -168,4 +171,4 @@ class ShopingCart(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Рецепты в карзине'
+        verbose_name_plural = 'Рецепты в корзине'

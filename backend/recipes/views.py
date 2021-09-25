@@ -1,16 +1,14 @@
-from os import path
-
 from django.contrib.auth import get_user_model
-from django.db.models import F, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, mixins, status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from foodgram import settings
+from recipes.utils import get_shopping_list
 
 from .filters import RecipesFilter
 from .models import (
@@ -23,7 +21,6 @@ from .serializers import (
 )
 
 User = get_user_model()
-
 
 class RecipesListRetreveDestroyView(
     viewsets.GenericViewSet,
@@ -59,7 +56,6 @@ class RecipesListRetreveDestroyView(
 
     def perform_create(self, serializer):
         new = serializer.save(author=self.request.user)
-        print(new.id)
 
     def get_create_serializer(self, *args, **kwargs):
         serializer_class = self.create_serializer_class
@@ -71,10 +67,7 @@ class RecipesListRetreveDestroyView(
         create_serializer.is_valid(raise_exception=True)
         self.perform_create(create_serializer)
         headers = self.get_success_headers(create_serializer.data)
-        try:
-            new_recipe = Recipes.objects.get(id=create_serializer.data['id'])
-        except IndexError:
-            pass
+        new_recipe = get_object_or_404(id=create_serializer.data['id'])
         serializer = self.get_serializer(new_recipe)
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
@@ -203,31 +196,20 @@ class CreateDeleteSubscriptionView(CreateDeleteRelationView):
     model_related_field = 'subscribed'
 
 
+@api_view(http_method_names=['GET'])
 def download_shoping_cart(request):
     user = request.user
-    file_path = path.join(
-        settings.MEDIA_ROOT, 'shoping_lists', f'{user.username}.txt'
-    )
-    with open(file_path, 'w') as shoping_list:
-        purchases = Recipes.objects.filter(
-            buyer__buyer=user
-        ).select_related('ingredientrecipe', 'ingredients', 'buyer').annotate(
-            ingredient=F('ingredients__name'),
-            units=F('ingredients__measurement_unit')
-        ).values('ingredient', 'units').annotate(
-            amount=Sum('ingredientrecipe__amount')
-        ).order_by()
-        shoping_list.write('\n\n\n')
-        for purchase in purchases:
-            line = ' '.join((
-                ' ' * 5,
-                purchase['ingredient'],
-                ' ' * (60 - len(purchase['ingredient'])),
-                str(purchase['amount']),
-                purchase['units']
-            )) + '\n'
-            shoping_list.write(line)
-        shoping_list.close()
+    if not user.is_authenticated:
+        return Response(
+            {"detail": "Authentication credentials were not provided."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    file_path = get_shopping_list(user)
+    if not file_path:
+        return Response(
+            {"detail": "There is nothing in the shopping list yet."},
+            status=status.HTTP_404_NOT_FOUND
+        )
     with open(file_path, 'r') as shoping_list:
         response = HttpResponse(
             shoping_list.read(), content_type="text/plain,charset=utf8"
