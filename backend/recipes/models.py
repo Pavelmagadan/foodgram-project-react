@@ -63,8 +63,9 @@ class Recipes(models.Model):
     cooking_time = models.IntegerField(
         verbose_name='Время приготовления, мин',
         validators=[MinValueValidator(
-            0.001, 'Время приготовления должно быть положительным числом'
-        )])
+            1, 'Время приготовления должно быть положительным числом'
+        )]
+    )
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата публикации'
     )
@@ -91,7 +92,7 @@ class IngredientRecipe(models.Model):
     amount = models.FloatField(
         verbose_name='Количество',
         validators=[MinValueValidator(
-            0.001, 'Количество должно быть положительным числом'
+            0.001, 'Количество ингредианта должно быть положительным числом'
         )]
     )
 

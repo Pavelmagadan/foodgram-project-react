@@ -1,7 +1,10 @@
 import webcolors
+
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+
 from users.serializers import CustomUserSerializer
 
 from .models import IngredientRecipe, Ingredients, Recipes, Tags
@@ -44,10 +47,12 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.StringRelatedField(
         source='ingredient.measurement_unit', read_only=True
     )
+    amount = serializers.FloatField()
 
     class Meta:
         model = IngredientRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount')
+
 
 
 class RecipesSerializer(serializers.ModelSerializer):
@@ -100,6 +105,12 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
         read_only=True
     )
     image = Base64ImageField(required=True)
+    cooking_time = serializers.IntegerField(validators = [
+        MinValueValidator(
+            1,
+            'Время приготовления должно быть положительным числом'
+        )
+    ])
 
     class Meta:
         fields = (
@@ -113,6 +124,14 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
         model = Recipes
+
+    def validate_ingredients(self, value):
+        for ingr in value:
+            if float(ingr['amount']) < 0.001:
+                raise serializers.ValidationError(
+                    'Количество ингредианта должно быть положительным числом'
+                )
+        return value
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredientrecipe_set')

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics, mixins, status, viewsets
+from rest_framework import filters, generics, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -22,14 +22,7 @@ from .serializers import (
 
 User = get_user_model()
 
-class RecipesListRetreveDestroyView(
-    viewsets.GenericViewSet,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin
-):
+class RecipesListRetreveDestroyView(viewsets.ModelViewSet):
     queryset = Recipes.objects.all()
     serializer_class = RecipesSerializer
     create_serializer_class = RecipesCreateSerializer
@@ -67,7 +60,7 @@ class RecipesListRetreveDestroyView(
         create_serializer.is_valid(raise_exception=True)
         self.perform_create(create_serializer)
         headers = self.get_success_headers(create_serializer.data)
-        new_recipe = get_object_or_404(id=create_serializer.data['id'])
+        new_recipe = get_object_or_404(Recipes, id=create_serializer.data['id'])
         serializer = self.get_serializer(new_recipe)
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers

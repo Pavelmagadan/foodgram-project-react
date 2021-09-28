@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import (
     Favorite, Ingredients, Recipes, ShopingCart, Subscription, Tags,
@@ -45,12 +46,12 @@ class TagAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInline, TagInline]
     list_display = (
-        'id', 'author', 'name', 'text', 'cooking_time', 'in_favorite'
+        'id', 'author', 'name', 'text', 'cooking_time', 'pub_date', 'in_favorite',
     )
     list_filter = ('name', 'author', 'tags',)
     search_fields = ('name', 'author__username',)
     list_display_links = (
-        'id', 'author', 'name', 'text', 'cooking_time', 'in_favorite',
+        'id', 'author', 'name', 'text', 'cooking_time', 'pub_date', 'in_favorite',
     )
     ordering = ('name',)
     exclude = ('tags',)
